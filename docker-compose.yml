@@ -1,0 +1,68 @@
+version: "3"
+
+services:
+  fruit-store:
+    build: ./fruit-store
+    container_name: fruit-store
+    expose:
+      - "3001"
+    networks:
+      - proxy
+
+  pos-fruit:
+    build: ./pos-fruit
+    container_name: pos-fruit
+    expose:
+      - "3002"
+    networks:
+      - proxy
+
+  fruit-admin:
+    build: ./fruit-admin
+    container_name: fruit-admin
+    expose:
+      - "3003"
+    networks:
+      - proxy
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81" # Adminpanel
+      - "443:443"
+    volumes:
+      - ./data/npm:/data
+      - ./data/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    driver: bridge
+# version: "3"
+
+# services:
+#   web:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - "80:80"
+#     volumes:
+#       - .:/app
+#       - /app/node_modules
+#     environment:
+#       - NODE_ENV=production
+#     depends_on:
+#       - db
+
+#   db:
+#     image: mongo:4.4.6
+#     volumes:
+#       - mongo-data:/data/db
+
+# volumes:
+#   mongo-data:
